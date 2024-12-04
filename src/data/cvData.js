@@ -1,6 +1,11 @@
 // src/data/cvData.js
 const cvData = `
 Name: Thomas Viejo
+Email: tviejo12@gmail.com
+Phone: +33624433321
+github: https://github.com/tviejo
+LinkedIn: https://www.linkedin.com/in/thomas-viejo-9a213b195/
+Location: Paris, France
 
 Work Experience:
 
@@ -8,16 +13,14 @@ Work Experience:
     - Developed a Windows Forms application to measure the energy consumption of IoT satellite transmitters.
     - Enabled accurate adaptation of energy sources in regions with scarce energy availability.
 
-- **Site Supervisor at ASTEC**, Saint-Bruno-de-Montarville, Quebec, Canada
+- **Automation Technician at ASTEC**
+    - Part-Time Employee (September 2022 - January 2023)
+    - Intern (May 2022 - August 2022)
     - Oversaw the construction of machinery for concrete production.
     - Created electrical schematics, assembly plans, wiring diagrams, and testing protocols.
     - Supervised cabling and on-site assembly teams.
     - Managed quality control, production schedules, deadlines, suppliers, subcontractors, procurement, and inventory.
     - Conducted testing and validation of machinery before client delivery.
-
-- **Automation Technician at ASTEC**
-    - Part-Time Employee (September 2022 - January 2023)
-    - Intern (May 2022 - August 2022)
 
 - **Camera Operator at Courtiseurs Productions** (Independent)
     - June 2018 - August 2021
