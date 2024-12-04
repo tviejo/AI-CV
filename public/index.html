@@ -3,41 +3,114 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+
+    <!-- Viewport Configuration -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+
+    <!-- Theme Color for Mobile Browsers -->
+    <meta name="theme-color" content="#121212" />
+
+    <!-- Primary Meta Tags -->
+    <title>Thomas Viejo - AI-Powered CV Assistant</title>
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="Explore Thomas Viejo's professional experiences, projects, and contact information through an AI-powered CV assistant. Located in Paris, France, Thomas is a skilled Software Developer with diverse expertise."
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    <meta
+      name="keywords"
+      content="Thomas Viejo, CV, Resume, AI Assistant, Software Developer, Programming, Electronics, Projects, Contact, Paris, France, GitHub, LinkedIn"
+    />
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>Thomas Viejo</title>
+    <!-- Open Graph Meta Tags for Social Media Sharing -->
+    <meta property="og:title" content="Thomas Viejo - AI-Powered CV Assistant" />
+    <meta
+      property="og:description"
+      content="Explore Thomas Viejo's professional experiences, projects, and contact information through an AI-powered CV assistant. Located in Paris, France, Thomas is a skilled Software Developer with diverse expertise."
+    />
+    <meta property="og:url" content="https://www.thomasviejo.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="%PUBLIC_URL%/og-image.png" />
+
+    <!-- Canonical Link to Avoid Duplicate Content Issues -->
+    <link rel="canonical" href="https://www.thomasviejo.com" />
+
+    <!-- Structured Data for Enhanced Search Engine Understanding -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Thomas Viejo",
+        "url": "https://www.thomasviejo.com",
+        "sameAs": [
+          "https://github.com/tviejo",
+          "https://www.linkedin.com/in/thomas-viejo-9a213b195/"
+        ],
+        "email": "mailto:tviejo12@gmail.com",
+        "telephone": "+33624433321",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Paris",
+          "addressCountry": "FR"
+        },
+        "jobTitle": "Software Developer",
+        "worksFor": {
+          "@type": "Organization",
+          "name": "VermR"
+        },
+        "alumniOf": [
+          {
+            "@type": "EducationalOrganization",
+            "name": "IUT Paul Sabatier",
+            "sameAs": "https://www.iut-pau.fr/"
+          },
+          {
+            "@type": "EducationalOrganization",
+            "name": "École de Technologie Supérieure de Montreal",
+            "sameAs": "https://etsmtl.ca/"
+          },
+          {
+            "@type": "EducationalOrganization",
+            "name": "Université Paris-Saclay",
+            "sameAs": "https://www.universite-paris-saclay.fr/"
+          },
+          {
+            "@type": "EducationalOrganization",
+            "name": "42 Paris",
+            "sameAs": "https://www.42.fr/"
+          }
+        ],
+        "description": "Thomas Viejo is a dedicated Software Developer based in Paris, France, with experience in C#, automation, and AI-powered applications. He has worked with organizations like ASTEC and Univerza v Mariboru, and he is currently pursuing advanced certifications in Law Entrepreneurship and Digital.",
+        "image": "https://www.thomasviejo.com/profile-photo.jpg",
+        "hasOccupation": {
+          "@type": "Occupation",
+          "name": "Software Developer",
+          "description": "Develops software applications using languages like C, VHDL, Grafcet, and Ladder. Skilled in electronic circuit fabrication, microcontroller programming, FPGA programming, and web development."
+        }
+      }
+    </script>
+
+    <!-- Preconnect to Improve Loading Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Google Fonts (Example: Roboto) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+    <!-- Manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <!-- Robots.txt -->
+    <meta name="robots" content="index, follow" />
+
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>
