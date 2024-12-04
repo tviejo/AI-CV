@@ -41,7 +41,6 @@ const Chat = ({ cvData }) => {
     if (!message.trim()) return;
 
     const userMessage = { sender: 'User', text: message };
-    setConversationHistory((prev) => [...prev, userMessage]);
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
