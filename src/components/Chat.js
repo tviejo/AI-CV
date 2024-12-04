@@ -10,43 +10,53 @@ import {
   CircularProgress,
   Paper,
   Avatar,
+  Grid,
 } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
 
-const Chat = ({ cvData }) => { // Removed apiKey prop
+const Chat = ({ cvData }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Automatically scroll to the bottom when messages change
+  // Scroll to the bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  // List of suggestion buttons
+  const suggestions = [
+    'What is your experience?',
+    'What is your contact?',
+    'Tell me about your projects.',
+    'What are your skills?',
+  ];
 
-    const userMessage = { sender: 'User', text: input };
+  // Handle sending messages
+  const handleSend = async (message = input) => {
+    if (!message.trim()) return;
+
+    const userMessage = { sender: 'User', text: message };
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
     try {
       const systemPrompt = `
 You are an AI assistant. You are talking to a recruiter about a candidate.
-You can only talk about the candidate or every subjects that can be linked to the candidate such as Programming or Electronics.
-Traduct in the correct language everyting. Do not hallucinate or talk about anything else.
-if the input is in an other language then english search the corresponding translation in english to search the answer but reply in the language of the input.
+You can only talk about the candidate or every subject that can be linked to the candidate, such as Programming or Electronics.
+Translate in the correct language everything. Do not hallucinate or talk about anything else.
+If the input is in another language, translate it into English to find the answer but reply in the language of the input.
 ${cvData}
-`;
+      `;
 
       const response = await axios.post('/api/chat', {
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: input },
+          { role: 'user', content: message },
         ],
       });
 
@@ -65,29 +75,52 @@ ${cvData}
     }
 
     setIsLoading(false);
-    setInput('');
+    setInput(''); // Clear input after sending
+  };
+
+  // Handle suggestion button clicks
+  const handleSuggestion = (suggestion) => {
+    setInput(suggestion);
+    handleSend(suggestion);
+  };
+
+  // Function to get Avatar content based on sender
+  const getAvatarContent = (sender) => {
+    if (sender === 'AI') return 'AI';
+    if (sender === 'User') return 'U';
+    return sender.charAt(0); // Fallback to first letter
   };
 
   return (
     <Box
       sx={{
-        width: '100%',          // Full width
-        height: '100vh',        // Full viewport height
+        width: '100%',
+        height: '100vh',
         display: 'flex',
         flexDirection: 'column',
+        backgroundColor: '#121212', // Dark background
+        color: '#ffffff', // Light text color
         padding: 2,
-        boxSizing: 'border-box', // Ensure padding doesn't cause overflow
+        boxSizing: 'border-box',
       }}
     >
-      <Typography variant="h4" align="center" gutterBottom>
-        ASK THE AI ASSISTANT ANYTHING
+      <Typography
+        variant="h4"
+        align="center"
+        gutterBottom
+        sx={{ color: '#bb86fc' }} // Light purple accent color
+      >
+        Thomas Viejo AI CV
       </Typography>
       <Box
         sx={{
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden', // Prevent overflow in the container
+          overflow: 'hidden',
+          backgroundColor: '#1e1e1e', // Slightly lighter dark background for contrast
+          borderRadius: 2,
+          padding: 2,
         }}
       >
         <Paper
@@ -95,67 +128,141 @@ ${cvData}
           sx={{
             flexGrow: 1,
             padding: 2,
-            overflowY: 'auto',    // Enable scrolling within the chat area
-            backgroundColor: '#f5f5f5',
+            overflowY: 'auto',
+            backgroundColor: '#1a1a1a', // Dark chat background
+            borderRadius: 2,
           }}
         >
-          {messages.map((msg, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                marginBottom: 2,
-                alignItems: 'flex-start',
-                flexDirection: msg.sender === 'User' ? 'row-reverse' : 'row',
-              }}
+          {messages.length === 0 ? (
+            // Initial state with suggestions and send button
+            <Grid
+              container
+              direction="column"
+              alignItems="center"
+              justifyContent="center"
+              spacing={2}
+              sx={{ height: '100%' }}
             >
-              <Avatar
-                sx={{ bgcolor: msg.sender === 'User' ? 'primary.main' : 'secondary.main' }}
-              >
-                {msg.sender.charAt(0)}
-              </Avatar>
-              <Box
-                sx={{
-                  maxWidth: '70%',
-                  bgcolor: msg.sender === 'User' ? 'primary.light' : 'secondary.light',
-                  color: 'black',
-                  padding: 1,
-                  borderRadius: 2,
-                  marginX: 1,
-                }}
-              >
-                {msg.sender === 'AI' ? (
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      code({ node, inline, className, children, ...props }) {
-                        const match = /language-(\w+)/.exec(className || '');
-                        return !inline && match ? (
-                          <SyntaxHighlighter
-                            style={oneDark}
-                            language={match[1]}
-                            PreTag="div"
-                            {...props}
-                          >
-                            {String(children).replace(/\n$/, '')}
-                          </SyntaxHighlighter>
-                        ) : (
-                          <code className={className} {...props}>
-                            {children}
-                          </code>
-                        );
+              <Grid item sx={{ width: '100%' }}>
+                <Box sx={{ display: 'flex', width: '100%' }}>
+                  <TextField
+                    variant="outlined"
+                    placeholder="Type your message..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
+                    disabled={isLoading}
+                    fullWidth
+                    sx={{
+                      backgroundColor: '#333333', // Input field background
+                      input: { color: '#ffffff' }, // Input text color
+                      fieldset: { borderColor: '#bb86fc' }, // Input border color
+                    }}
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={() => handleSend()}
+                    disabled={isLoading || !input.trim()}
+                    sx={{
+                      marginLeft: 1,
+                      backgroundColor: '#bb86fc',
+                      '&:hover': {
+                        backgroundColor: '#9a67ea',
                       },
+                      color: '#ffffff',
                     }}
                   >
-                    {msg.text}
-                  </ReactMarkdown>
-                ) : (
-                  <Typography variant="body1">{msg.text}</Typography>
-                )}
+                    Send
+                  </Button>
+                </Box>
+              </Grid>
+              <Grid item container spacing={2} justifyContent="center">
+                {suggestions.map((suggestion, index) => (
+                  <Grid item key={index}>
+                    <Button
+                      variant="contained"
+                      onClick={() => handleSuggestion(suggestion)}
+                      sx={{
+                        backgroundColor: '#bb86fc',
+                        '&:hover': {
+                          backgroundColor: '#9a67ea',
+                        },
+                        color: '#ffffff',
+                      }}
+                    >
+                      {suggestion}
+                    </Button>
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+          ) : (
+            // Display chat messages
+            messages.map((msg, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  marginBottom: 2,
+                  alignItems: 'flex-start',
+                  flexDirection: msg.sender === 'User' ? 'row-reverse' : 'row',
+                }}
+              >
+                <Avatar
+                  sx={{
+                    bgcolor: msg.sender === 'User' ? '#6200ea' : '#03dac6', // Purple for User, Teal for AI
+                    color: '#ffffff',
+                    width: 40,
+                    height: 40,
+                    fontSize: '1rem',
+                  }}
+                >
+                  {getAvatarContent(msg.sender)}
+                </Avatar>
+                <Box
+                  sx={{
+                    maxWidth: '70%',
+                    bgcolor: msg.sender === 'User' ? '#6200ea' : '#03dac6', // Bubble colors
+                    color: '#ffffff',
+                    padding: 1,
+                    borderRadius: 2,
+                    marginX: 1,
+                  }}
+                >
+                  {msg.sender === 'AI' ? (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        code({ node, inline, className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || '');
+                          return !inline && match ? (
+                            <SyntaxHighlighter
+                              style={oneDark}
+                              language={match[1]}
+                              PreTag="div"
+                              {...props}
+                            >
+                              {String(children).replace(/\n$/, '')}
+                            </SyntaxHighlighter>
+                          ) : (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        },
+                      }}
+                    >
+                      {msg.text}
+                    </ReactMarkdown>
+                  ) : (
+                    <Typography variant="body1">{msg.text}</Typography>
+                  )}
+                </Box>
               </Box>
-            </Box>
-          ))}
-          {isLoading && (
+            ))
+          )}
+
+          {isLoading && messages.length !== 0 && (
             <Box
               sx={{
                 display: 'flex',
@@ -163,31 +270,49 @@ ${cvData}
                 marginBottom: 2,
               }}
             >
-              <CircularProgress size={20} sx={{ marginRight: 1 }} />
-              <Typography variant="body2">AI is typing...</Typography>
+              <CircularProgress size={20} sx={{ marginRight: 1, color: '#bb86fc' }} />
+              <Typography variant="body2" sx={{ color: '#ffffff' }}>
+                AI is typing...
+              </Typography>
             </Box>
           )}
           <div ref={messagesEndRef} />
         </Paper>
-        <Box sx={{ display: 'flex', marginTop: 1 }}>
-          <TextField
-            variant="outlined"
-            placeholder="Type your message..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
-            disabled={isLoading}
-            sx={{ flexGrow: 1, marginRight: 1 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSend}
-            disabled={isLoading || !input.trim()}
-          >
-            Send
-          </Button>
-        </Box>
+        {messages.length !== 0 && (
+          // Input area for sending messages
+          <Box sx={{ display: 'flex', marginTop: 1 }}>
+            <TextField
+              variant="outlined"
+              placeholder="Type your message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
+              disabled={isLoading}
+              fullWidth
+              sx={{
+                flexGrow: 1,
+                marginRight: 1,
+                backgroundColor: '#333333', // Input field background
+                input: { color: '#ffffff' }, // Input text color
+                fieldset: { borderColor: '#bb86fc' }, // Input border color
+              }}
+            />
+            <Button
+              variant="contained"
+              onClick={() => handleSend()}
+              disabled={isLoading || !input.trim()}
+              sx={{
+                backgroundColor: '#bb86fc',
+                '&:hover': {
+                  backgroundColor: '#9a67ea',
+                },
+                color: '#ffffff',
+              }}
+            >
+              Send
+            </Button>
+          </Box>
+        )}
       </Box>
     </Box>
   );
