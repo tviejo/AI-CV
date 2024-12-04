@@ -2,10 +2,10 @@
 import React from 'react';
 import Chat from './Chat';
 
-const HomePage = ({ apiKey, cvData }) => {
+const HomePage = ({ cvData }) => {
   return (
     <div>
-      <Chat apiKey={apiKey} cvData={cvData} />
+      <Chat cvData={cvData} />
     </div>
   );
 };
