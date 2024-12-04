@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
+    "@mui/icons-material": "^6.1.10",
     "@mui/material": "^6.1.10",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -14,6 +15,7 @@
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
     "react-modal": "^3.16.1",
+    "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.6.1",
     "remark-gfm": "^4.0.0",
