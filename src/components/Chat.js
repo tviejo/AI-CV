@@ -21,6 +21,7 @@ const Chat = ({ cvData }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState([]);
   const messagesEndRef = useRef(null);
 
   // Scroll to the bottom when messages change
@@ -41,6 +42,7 @@ const Chat = ({ cvData }) => {
     if (!message.trim()) return;
 
     const userMessage = { sender: 'User', text: message };
+    setConversationHistory((prev) => [...prev, userMessage]);
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
@@ -48,10 +50,18 @@ const Chat = ({ cvData }) => {
       const systemPrompt = `
         You are talking to a recruiter about a canditate, Thomas Viejo.
         You can only talk about the candidate or every subject that can be linked to the candidate, such as Programming or Electronics for example.
-        Speak as if you are the candidate.
+        If the question is first person, answer in the first person.
+        if the question is third person, answer in the third person.
         Speak naturally and provide detailed answers.
         Speak with the language of the recruiter.
         Use the information provided in the CV.
+        if the question is about a specific project, provide details about the project.
+        If the question is about a specific skill, provide details about the skill.
+        If the question is about a specific experience, provide details about the experience.
+        If the question is about a specific education, provide details about the education.
+        If the question is about a specific certification, provide details about the certification.
+        If the question is about a specific contact information, provide details about the contact information.
+        if the question is not specific, ask for clarification.
         ${cvData}
         `;
 
@@ -59,6 +69,8 @@ const Chat = ({ cvData }) => {
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message },
+          ...conversationHistory,
+          userMessage,
         ],
       });
 
@@ -66,6 +78,7 @@ const Chat = ({ cvData }) => {
         sender: 'AI',
         text: response.data.choices[0].message.content,
       };
+      setConversationHistory((prev) => [...prev, aiMessage]);
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error(error);
