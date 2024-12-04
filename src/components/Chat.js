@@ -21,7 +21,6 @@ const Chat = ({ cvData }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [conversationHistory, setConversationHistory] = useState([]);
   const messagesEndRef = useRef(null);
 
   // Scroll to the bottom when messages change
@@ -69,8 +68,6 @@ const Chat = ({ cvData }) => {
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message },
-          ...conversationHistory,
-          userMessage,
         ],
       });
 
@@ -78,7 +75,6 @@ const Chat = ({ cvData }) => {
         sender: 'AI',
         text: response.data.choices[0].message.content,
       };
-      setConversationHistory((prev) => [...prev, aiMessage]);
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.error(error);
