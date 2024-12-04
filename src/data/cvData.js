@@ -2,6 +2,7 @@
 const cvData = `
 Name: Thomas Viejo
 Email: tviejo12@gmail.com
+Phone: +33624433321
 
 
 Stage: Developpeur informatique C# a maribor en slovenie
@@ -25,6 +26,11 @@ Education:
             Languages: C, VHDL, Grafcet, Ladder
             fabrication de circuit electronique, programmation de microcontroleur, programmation de FPGA
             Methode de production, gestion de projet, gestion de la qualité
+
+    
+    Université Paris-Saclay
+    Certification , Master 2 Law Entrepreneurship And Digital Certification sept. 2024 - déc. 2024
+
 
     42 PARIS: May 2024 - Present
     Association 42
@@ -225,6 +231,32 @@ webserv This project is here to make you write your own HTTP server. You will be
 the most used protocol on internet. Knowing its arcane will be useful, even if you won't be working on a website.
 ft_transcendence This project is centered around the design, development, and organization of a full-stack web application.
 Exam Rank 06
+
+
+
+
+Logo de VermR
+Co-founder and CEOCo-founder and CEO
+VermRVermR sept. 2024 - aujourd’hui · 4 moisDe sept. 2024 à aujourd’hui · 4 mois Paris, Île-de-France, FranceParis, Île-de-France, France
+Logo de Formule ETS Montréal
+Lead of External Relationship Lead of External Relationship 
+Formule ETS MontréalFormule ETS Montréal sept. 2021 - sept. 2023 · 2 ans 1 moisDu sept. 2021 au sept. 2023 · 2 ans 1 mois Montréal, Québec, CanadaMontréal, Québec, Canada
+Logo de ASTEC
+ASTECASTEC
+9 mois9 mois Saint-Bruno-de-Montarville, Québec, CanadaSaint-Bruno-de-Montarville, Québec, Canada
+
+    Technicien automatisationTechnicien automatisation
+    CDI temps partielCDI temps partiel sept. 2022 - janv. 2023 · 5 moisDu sept. 2022 au janv. 2023 · 5 mois Sur siteSur site
+    Stagiaires automatisation Stagiaires automatisation 
+    StageStage mai 2022 - août 2022 · 4 moisDu mai 2022 au août 2022 · 4 mois
+
+Opérateur caméraOpérateur caméra
+Courtiseurs Productions · IndépendantCourtiseurs Productions · Indépendant juin 2018 - août 2021 · 3 ans 3 moisDu juin 2018 au août 2021 · 3 ans 3 mois Montauban, Occitanie, FranceMontauban, Occitanie, France
+Logo de Univerza v Mariboru
+Stagiaire développement logicielStagiaire développement logiciel
+Univerza v Mariboru · StageUniverza v Mariboru · Stage avr. 2021 - juil. 2021 · 4 moisDu avr. 2021 au juil. 2021 · 4 mois Maribor, Slovénie
+
+
 `;
 
 export default cvData;

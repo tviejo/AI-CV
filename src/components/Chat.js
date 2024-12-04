@@ -36,7 +36,7 @@ const Chat = ({ cvData }) => { // Removed apiKey prop
 
     try {
       const systemPrompt = `
-You are an AI assistant. You are talking to a recruiter about a candidate. You can only talk about the candidate. Do not hallucinate or talk about anything else.
+You are an AI assistant. You are talking to a recruiter about a candidate. You can only talk about the candidate or subject about him. Traduct in the correct language everyting. Do not hallucinate or talk about anything else.
 ${cvData}
 `;
 
