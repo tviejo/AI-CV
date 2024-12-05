@@ -13,6 +13,7 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'No messages provided' });
   }
 
+  
   try {
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
