@@ -1,139 +1,174 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  IconButton,
-} from '@mui/material';
-import MicIcon from '@mui/icons-material/Mic';
-import MicOffIcon from '@mui/icons-material/MicOff';
+// src/components/Speak.js
 
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Button, Box, Typography, CircularProgress } from '@mui/material';
+import { WavRecorder, WavStreamPlayer } from '../lib/wavtools';
+import { RealtimeClient } from '@openai/realtime-api-beta';
+import { X, Zap } from 'react-feather';
+import './Speak.scss'; // Create corresponding SCSS for styling
 
-const Speak = ({ cvData }) => {
+const Speak = () => {
+  // State variables
   const [isRecording, setIsRecording] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [messages, setMessages] = useState([]); // Chat messages
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState([]);
 
-  // Check for browser support
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+  // Refs for recorder, player, and client
+  const recorderRef = useRef(null);
+  const playerRef = useRef(null);
+  const clientRef = useRef(null);
 
-  const synth = window.speechSynthesis;
+  // Environment variables
+  const LOCAL_RELAY_SERVER_URL = process.env.REACT_APP_LOCAL_RELAY_SERVER_URL || '';
+  const apiKey = LOCAL_RELAY_SERVER_URL
+    ? '' // API key is not needed if using a relay server
+    : process.env.REACT_APP_OPENAI_API_KEY || '';
 
-  const handleListen = () => {
-    if (!recognition) {
-      alert('Speech Recognition API is not supported in this browser.');
-      return;
-    }
+  // Initialize recorder, player, and client
+  useEffect(() => {
+    // Initialize WavRecorder and WavStreamPlayer
+    recorderRef.current = new WavRecorder({ sampleRate: 24000 });
+    playerRef.current = new WavStreamPlayer({ sampleRate: 24000 });
 
-    if (isRecording) {
-      recognition.stop();
-      setIsRecording(false);
-    } else {
-      recognition.start();
-      setIsRecording(true);
-    }
+    // Initialize RealtimeClient
+    clientRef.current = new RealtimeClient(
+      LOCAL_RELAY_SERVER_URL
+        ? { url: LOCAL_RELAY_SERVER_URL }
+        : {
+            apiKey: apiKey,
+            dangerouslyAllowAPIKeyInBrowser: true,
+          }
+    );
 
-    recognition.onresult = (event) => {
-      const speechToText = event.results[0][0].transcript;
-      handleSend(speechToText);
+    // Handle real-time responses from the assistant
+    clientRef.current.on('conversation.updated', ({ item }) => {
+      if (item.formatted.transcript) {
+        setMessages((prev) => [...prev, { sender: 'AI', text: item.formatted.transcript }]);
+        setIsLoading(false);
+      }
+    });
+
+    // Handle errors
+    clientRef.current.on('error', (error) => {
+      console.error('RealtimeClient Error:', error);
+      setIsLoading(false);
+    });
+
+    // Connect to conversation if not using a relay server
+    const connectClient = async () => {
+      if (LOCAL_RELAY_SERVER_URL) {
+        // If using a relay server, no need to handle audio recording
+        try {
+          await clientRef.current.connect();
+          setIsConnected(true);
+          setMessages((prev) => [...prev, { sender: 'AI', text: 'Hello!' }]);
+        } catch (error) {
+          console.error('Connection error:', error);
+        }
+      } else {
+        try {
+          await recorderRef.current.begin();
+          await playerRef.current.connect();
+          await clientRef.current.connect();
+          setIsConnected(true);
+          setMessages((prev) => [...prev, { sender: 'AI', text: 'Hello!' }]);
+
+          // Start listening for audio input
+          if (clientRef.current.getTurnDetectionType() === 'server_vad') {
+            await recorderRef.current.record((data) => clientRef.current.appendInputAudio(data));
+          }
+        } catch (error) {
+          console.error('Connection error:', error);
+        }
+      }
     };
 
-    recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
-      setIsRecording(false);
+    connectClient();
+
+    // Cleanup on unmount
+    return () => {
+      if (recorderRef.current) {
+        recorderRef.current.quit().catch(console.error);
+      }
+      if (playerRef.current) {
+        playerRef.current.interrupt().catch(console.error);
+      }
+      if (clientRef.current) {
+        clientRef.current.disconnect();
+      }
     };
+  }, [apiKey, LOCAL_RELAY_SERVER_URL]);
 
-    recognition.onend = () => {
-      setIsRecording(false);
-    };
-  };
-
-  const handleSend = async (message) => {
-    if (!message.trim()) return;
-
-    const userMessage = { sender: 'User', text: message };
-    setMessages((prev) => [...prev, userMessage]);
+  // Start recording
+  const startRecording = async () => {
+    setIsRecording(true);
     setIsLoading(true);
+    setMessages((prev) => [...prev, { sender: 'User', text: '...' }]);
 
     try {
-      const systemPrompt = `
-You are an AI assistant. You are talking to a recruiter about a candidate.
-You can only talk about the candidate or every subject that can be linked to the candidate, such as Programming or Electronics.
-Translate in the correct language everything. Do not hallucinate or talk about anything else.
-If the input is in another language, translate it into English to find the answer but reply in the language of the input.
-${cvData}
-      `;
-
-      const response = await axios.post('/api/stream', {
-        prompt: systemPrompt + `\nUser: ${message}\nAI:`,
-        stream: true,
+      await recorderRef.current.record((data) => {
+        clientRef.current.appendInputAudio(data);
       });
-
-      const aiMessage = { sender: 'AI', text: '' };
-      const reader = response.data.getReader();
-      const decoder = new TextDecoder();
-
-      let chunk;
-      while (!(chunk = await reader.read()).done) {
-        const text = decoder.decode(chunk.value, { stream: true });
-        aiMessage.text += text;
-        setMessages((prev) => {
-          const updatedMessages = [...prev];
-          updatedMessages[updatedMessages.length - 1] = aiMessage;
-          return updatedMessages;
-        });
-      }
-
-      handleSpeak(aiMessage.text);
     } catch (error) {
-      console.error(error);
-      const errorMessage = {
-        sender: 'AI',
-        text: 'Sorry, something went wrong. Please try again later.',
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-      handleSpeak(errorMessage.text);
+      console.error('Error starting recording:', error);
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
-  const handleSpeak = (text) => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      synth.speak(utterance);
-    } else {
-      alert('Speech Synthesis API is not supported in this browser.');
+  // Stop recording
+  const stopRecording = async () => {
+    setIsRecording(false);
+    try {
+      await recorderRef.current.pause();
+      clientRef.current.createResponse();
+    } catch (error) {
+      console.error('Error stopping recording:', error);
+      setIsLoading(false);
+    }
+  };
+
+  // Handle Disconnect
+  const handleDisconnect = async () => {
+    setIsConnected(false);
+    setMessages([]);
+    setIsLoading(false);
+
+    if (recorderRef.current) {
+      await recorderRef.current.end();
+    }
+    if (playerRef.current) {
+      await playerRef.current.interrupt();
+    }
+    if (clientRef.current) {
+      await clientRef.current.disconnect();
     }
   };
 
   return (
     <Box
+      className="speak-container"
       sx={{
-        width: '100%',
-        height: '100vh',
-        backgroundColor: '#121212',
-        color: '#ffffff',
-        padding: 2,
-        boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'center',
+        padding: 2,
+        backgroundColor: '#121212',
+        color: '#ffffff',
+        height: '100vh',
+        overflow: 'hidden',
       }}
     >
-      <Typography
-        variant="h4"
-        align="center"
-        gutterBottom
-        sx={{ color: '#bb86fc' }}
-      >
-        Speak with the AI Assistant
+      <Typography variant="h4" gutterBottom sx={{ color: '#bb86fc' }}>
+        AI Voice Chat
       </Typography>
+
       <Box
+        className="chat-box"
         sx={{
           flexGrow: 1,
+          width: '100%',
+          maxWidth: '600px',
           backgroundColor: '#1e1e1e',
           borderRadius: 2,
           padding: 2,
@@ -143,61 +178,72 @@ ${cvData}
         {messages.map((msg, index) => (
           <Box
             key={index}
+            className={`message ${msg.sender === 'User' ? 'user-message' : 'ai-message'}`}
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: msg.sender === 'User' ? 'flex-end' : 'flex-start',
               marginBottom: 2,
+              display: 'flex',
+              flexDirection: msg.sender === 'User' ? 'row-reverse' : 'row',
+              alignItems: 'flex-start',
             }}
           >
-              <Typography
-                variant="body1"
-                sx={{
-                  maxWidth: '70%',
-                  backgroundColor: msg.sender === 'User' ? '#6200ea' : '#03dac6',
-                  color: '#ffffff',
-                  padding: 1,
-                  borderRadius: 2,
-                }}
-              >
-                {msg.text}
-              </Typography>
+            <Box
+              className="message-content"
+              sx={{
+                padding: 1,
+                borderRadius: 2,
+                maxWidth: '70%',
+                backgroundColor: msg.sender === 'User' ? '#6200ea' : '#03dac6',
+                color: '#ffffff',
+              }}
+            >
+              {msg.text}
+            </Box>
           </Box>
         ))}
+
         {isLoading && (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: 2,
-            }}
-          >
+          <Box className="loading" sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
             <CircularProgress size={20} sx={{ marginRight: 1, color: '#bb86fc' }} />
-            <Typography variant="body2" sx={{ color: '#ffffff' }}>
-              AI is processing...
-            </Typography>
+            <Typography variant="body2">AI is typing...</Typography>
           </Box>
         )}
       </Box>
+
       <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: 2,
-        }}
+        className="controls"
+        sx={{ marginTop: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
-        <IconButton
-          onClick={handleListen}
-          sx={{
-            backgroundColor: isRecording ? '#9a67ea' : '#bb86fc',
-            color: '#ffffff',
-            '&:hover': {
-              backgroundColor: isRecording ? '#7e57c2' : '#9a67ea',
-            },
-          }}
-        >
-          {isRecording ? <MicOffIcon /> : <MicIcon />}
-        </IconButton>
+        {isConnected ? (
+          <Button
+            variant="contained"
+            onMouseDown={startRecording}
+            onMouseUp={stopRecording}
+            disabled={isRecording}
+            sx={{
+              backgroundColor: isRecording ? '#bb86fc' : '#6200ea',
+              '&:hover': {
+                backgroundColor: isRecording ? '#9a67ea' : '#5a00d2',
+              },
+            }}
+          >
+            {isRecording ? 'Release to Send' : 'Push to Talk'}
+          </Button>
+        ) : (
+          <Typography variant="body1" color="error">
+            Connecting...
+          </Typography>
+        )}
+        {isConnected && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            startIcon={<X />}
+            onClick={handleDisconnect}
+            sx={{ marginTop: 1 }}
+          >
+            Disconnect
+          </Button>
+        )}
       </Box>
     </Box>
   );
