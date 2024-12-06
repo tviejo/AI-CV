@@ -50,7 +50,9 @@ const Chat = ({ cvData }) => {
 
   // Function to build the message history for the API
   const buildMessageHistory = (userMessage) => {
+    const currentDate = dayjs().format('MMMM D, YYYY'); // e.g., December 6, 2024
     const systemPrompt = `
+      Today's date is ${currentDate}.
       You are talking to a recruiter about a candidate, Thomas Viejo.
       You can only talk about the candidate or related subjects (e.g., Programming, Electronics).
       If the question is first person, answer in first person.
