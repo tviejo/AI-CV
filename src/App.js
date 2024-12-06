@@ -1,13 +1,15 @@
 // src/App.js
+
 import React from 'react';
-import HomePage from './components/HomePage';
+import Chat from './components/Chat';
 import cvData from './data/cvData';
+import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
   return (
-    <div className="App">
-      <HomePage cvData={cvData} />
-    </div>
+    <ThemeProvider>
+      <Chat cvData={cvData} />
+    </ThemeProvider>
   );
 }
 
