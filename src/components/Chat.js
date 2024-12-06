@@ -7,13 +7,11 @@ import {
   Button,
   TextField,
   Typography,
-  CircularProgress,
   Paper,
   Avatar,
   Grid,
   IconButton,
   Tooltip,
-  Switch,
 } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
