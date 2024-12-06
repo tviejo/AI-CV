@@ -14,8 +14,9 @@ Work Experience:
     - Enabled accurate adaptation of energy sources in regions with scarce energy availability.
 
 - **Automation Technician at ASTEC**
-    - Part-Time Employee (September 2022 - January 2023)
     - Intern (May 2022 - August 2022)
+    - Part-Time Employee (September 2022 - January 2023)
+    - Saint-Bruno-de-Montarville, Quebec, Canada
     - Oversaw the construction of machinery for concrete production.
     - Created electrical schematics, assembly plans, wiring diagrams, and testing protocols.
     - Supervised cabling and on-site assembly teams.
@@ -27,7 +28,18 @@ Work Experience:
     - Montauban, Occitanie, France
     - Operated camera equipment for various productions.
 
+- **Art Salesman** (Part-Time)
+    - 2021 - present
+    - For the artist **Philippe Viejo** (father) I sell his paintings in fairs and online.
+
+
 Education:
+
+- **Seconde S**
+    - Liceo Franco-Mexicano, Mexico City, Mexico
+
+- **Baccalauréat Scientifique (High School Diploma in Science)**
+    - Lycée Bourdelle, Montauban, France
 
 - **DUT in Electrical Engineering and Industrial Computing**  
   *IUT Paul Sabatier* (September 2019 - June 2021)
@@ -47,6 +59,7 @@ Education:
   *Association 42*  
   96, Boulevard Bessières  
   75017 Paris, FRANCE
+
 
 **ACADEMIC RESULTS FOR THOMAS VIEJO**
 
@@ -120,7 +133,7 @@ Thomas Viejo, born on June 27, 2001, in Schoelcher, France, has obtained the gra
 
 **Additional Information:**
 
-- **Languages:** Fluent in French and English.
+- **Languages:** Fluent in French and English, Intermediate in Spanish.
 - **Technical Skills:** Proficient in C, VHDL, Grafcet, Ladder, C++, Python, JavaScript.
 - **Certifications:** Master 2 Law Entrepreneurship and Digital.
 
@@ -142,7 +155,7 @@ Thomas Viejo, born on June 27, 2001, in Schoelcher, France, has obtained the gra
     - Important partnerships with companies like Tesla, Bombardier, Ford, Red Bull, and others.
 
 - **Hobbies:** Photography, Videography, Traveling.
-- **Interests:** Technology, Innovation, Entrepreneurship, Sustainability, Social Impact, AI.
+- **Interests:** Technology, Art, Innovation, Entrepreneurship, Sustainability, Social Impact, AI.
 - **Travel:** One year of travel with a motorhome from Argentina to Alaska.
 
 `;
