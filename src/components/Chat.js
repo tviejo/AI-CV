@@ -36,6 +36,41 @@ const Chat = ({ cvData }) => {
     'What are your skills?',
   ];
 
+  // Function to build the message history for the API
+  const buildMessageHistory = (userMessage) => {
+    const systemPrompt = `
+      You are talking to a recruiter about a candidate, Thomas Viejo.
+      You can only talk about the candidate or related subjects (e.g. Programming, Electronics).
+      If the question is first person, answer in first person.
+      If the question is third person, answer in third person.
+      Speak naturally and provide detailed answers.
+      Speak with the language of the recruiter.
+      Use the information provided in the CV.
+      If the question is about a specific project, skill, experience, education, or certification, provide details.
+      If the question is about specific contact information, provide it.
+      If the question is not specific, ask for clarification.
+
+      ${cvData}
+    `;
+
+    // Convert existing messages into a role-based format
+    const history = messages.map((msg) => {
+      return {
+        role: msg.sender === 'User' ? 'user' : 'assistant',
+        content: msg.text,
+      };
+    });
+
+    // Add the new user message at the end
+    const completeMessages = [
+      { role: 'system', content: systemPrompt },
+      ...history,
+      { role: 'user', content: userMessage }
+    ];
+
+    return completeMessages;
+  };
+
   // Handle sending messages
   const handleSend = async (message = input) => {
     if (!message.trim()) return;
@@ -45,29 +80,10 @@ const Chat = ({ cvData }) => {
     setIsLoading(true);
 
     try {
-      const systemPrompt = `
-        You are talking to a recruiter about a canditate, Thomas Viejo.
-        You can only talk about the candidate or every subject that can be linked to the candidate, such as Programming or Electronics for example.
-        If the question is first person, answer in the first person.
-        if the question is third person, answer in the third person.
-        Speak naturally and provide detailed answers.
-        Speak with the language of the recruiter.
-        Use the information provided in the CV.
-        if the question is about a specific project, provide details about the project.
-        If the question is about a specific skill, provide details about the skill.
-        If the question is about a specific experience, provide details about the experience.
-        If the question is about a specific education, provide details about the education.
-        If the question is about a specific certification, provide details about the certification.
-        If the question is about a specific contact information, provide details about the contact information.
-        if the question is not specific, ask for clarification.
-        ${cvData}
-        `;
+      const completeMessages = buildMessageHistory(message);
 
       const response = await axios.post('/api/chat', {
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message },
-        ],
+        messages: completeMessages,
       });
 
       const aiMessage = {
@@ -98,7 +114,7 @@ const Chat = ({ cvData }) => {
   const getAvatarContent = (sender) => {
     if (sender === 'AI') return 'AI';
     if (sender === 'User') return 'U';
-    return sender.charAt(0); // Fallback to first letter
+    return sender.charAt(0);
   };
 
   return (
@@ -164,9 +180,9 @@ const Chat = ({ cvData }) => {
                     disabled={isLoading}
                     fullWidth
                     sx={{
-                      backgroundColor: '#333333', // Input field background
-                      input: { color: '#ffffff' }, // Input text color
-                      fieldset: { borderColor: '#bb86fc' }, // Input border color
+                      backgroundColor: '#333333',
+                      input: { color: '#ffffff' },
+                      fieldset: { borderColor: '#bb86fc' },
                     }}
                   />
                   <Button
@@ -220,7 +236,7 @@ const Chat = ({ cvData }) => {
               >
                 <Avatar
                   sx={{
-                    bgcolor: msg.sender === 'User' ? '#6200ea' : '#03dac6', // Purple for User, Teal for AI
+                    bgcolor: msg.sender === 'User' ? '#6200ea' : '#03dac6',
                     color: '#ffffff',
                     width: 40,
                     height: 40,
@@ -232,7 +248,7 @@ const Chat = ({ cvData }) => {
                 <Box
                   sx={{
                     maxWidth: '70%',
-                    bgcolor: msg.sender === 'User' ? '#6200ea' : '#03dac6', // Bubble colors
+                    bgcolor: msg.sender === 'User' ? '#6200ea' : '#03dac6',
                     color: '#ffffff',
                     padding: 1,
                     borderRadius: 2,
@@ -302,9 +318,9 @@ const Chat = ({ cvData }) => {
               sx={{
                 flexGrow: 1,
                 marginRight: 1,
-                backgroundColor: '#333333', // Input field background
-                input: { color: '#ffffff' }, // Input text color
-                fieldset: { borderColor: '#bb86fc' }, // Input border color
+                backgroundColor: '#333333',
+                input: { color: '#ffffff' },
+                fieldset: { borderColor: '#bb86fc' },
               }}
             />
             <Button
